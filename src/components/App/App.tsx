@@ -44,13 +44,13 @@ function App() {
     }
   }, [searchImage, currentPage]);
 
-  const handleSearch = (eventValue: string) => {
+  const onSubmit = (eventValue: string) => {
     if (eventValue !== searchImage) {
       setSearchImage(eventValue);
       setCurrentPage(1);
-      setimagesData([]);
+      setimagesData([]); 
     }
-  };
+};
   const onClickOnImage = (imageUrl: string): void => {
     if (!modalIsOpen) {
       setSelectedImageUrl(imageUrl);
@@ -69,7 +69,7 @@ function App() {
 
   return (
     <>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onSubmit={onSubmit} />
       {imagesData.length>0 && <ImageGallery Images={imagesData} onClickOnImage={onClickOnImage} />}
       {modalIsOpen && <ImageModal imageUrl={selectedImageUrl} modalIsOpen={modalIsOpen} onRequestClose={closeModal} />}
       {isLoad && <Loader />}

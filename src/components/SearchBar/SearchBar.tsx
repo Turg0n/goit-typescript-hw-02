@@ -1,36 +1,42 @@
 import css from "../SearchBar/SearchBar.module.css";
 import { toast } from "react-hot-toast";
-import { FormEvent } from 'react';
 
-interface ISearchBarProps {
-  onSearch: (query: string) => void;
+interface SearchBarProps {
+  onSubmit: (value: string) => void;
 }
 
-const SearchBar: React.FC<ISearchBarProps> = ({ onSearch }) => {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const query = (form.elements.namedItem('query') as HTMLInputElement).value;
+const SearchBar: React.FC<SearchBarProps> = ({ onSubmit }) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
 
-    if (!query.trim().length) {
-      toast.error('Input field is empty. Please provide a value.');
+    const form = (event.target as HTMLButtonElement).form;
+    if (!form) return; 
 
+    const searchInput = Array.from(form.elements).find(
+      (el) =>
+        el instanceof HTMLInputElement &&
+        el.nodeName.toLowerCase() === 'input' &&
+        el.name === 'searchInput'
+    ) as HTMLInputElement | undefined;
+
+    const searchInputValue = searchInput?.value.trim();
+    if (!searchInputValue) {
+      toast.error('Please enter text to search for images.');
       return;
     }
 
-    onSearch(query);
-    form.reset();
+    onSubmit(searchInputValue);
   };
   return (
     <header className={css.searchWrapper}>
-      <form className={css.form} onSubmit={handleSubmit}>
+      <form className={css.form} >
         <input
           className={css.inputText}
           type="text"
           name="searchInput"
           placeholder="Search images and photos"
         />
-        <button type="submit" >
+        <button type="submit" onClick={handleClick}>
           Search
         </button>
       </form>
