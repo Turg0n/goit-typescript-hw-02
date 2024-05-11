@@ -4,23 +4,24 @@ import SearchBar from "../SearchBar/SearchBar";
 import Loader from "../Loader/Loader";
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import ImageGallery from '../ImageGallery/ImageGallery';
-import ImageModal from "../ImageModal/ImageModal";
-import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
-import { requestImages } from "/src/services/api.js";
+import ImageModal from "../ImageModal/ImageModal.tsx";
+import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn.tsx";
+import { requestProductsByQuery } from "../../services/api";
+import { ImageData } from "./App.types";
 
 function App() {
-  const [selectedImageUrl, setSelectedImageUrl] = useState("");
-  const [totalImageOnApi, setTotalImageOnApi] = useState(0);
-  const [isLoad, setisLoad] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string>("");
+  const [totalImageOnApi, setTotalImageOnApi] = useState<number>(0);
+  const [isLoad, setisLoad] = useState<boolean>(false);
   const IMAGE_PER_PAGE = 12;
-  const [searchImage, setSearchImage] = useState("");
-  const [imagesData, setimagesData] = useState([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isError, setisError] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchImage, setSearchImage] = useState<string>("");
+  const [imagesData, setimagesData] = useState<ImageData[]>([]);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [isError, setisError] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   
-  const onSubmit = (eventValue) => {
+  const onSubmit = (eventValue: string) => {
     if (eventValue !== searchImage) {
       setSearchImage(eventValue);
       setCurrentPage(1);
@@ -29,14 +30,14 @@ function App() {
   };
   
 
-  const fetchData = async (searchImage, currentPage) => {
+  const fetchData = async (searchImage: string, currentPage: number) => {
     if (searchImage) {
       try {
         setisError(false);
         setisLoad(true);
-        const data = await requestImages(searchImage, IMAGE_PER_PAGE, currentPage);
-        setimagesData(previmagesData => [...previmagesData, ...data.results]); 
-        setTotalImageOnApi(data.total);
+        const data = await requestProductsByQuery(searchImage as string, IMAGE_PER_PAGE as number, currentPage as number);
+        setimagesData((previmagesData:ImageData[]) => [...previmagesData, ...data.results]); 
+        setTotalImageOnApi(data.total as number);
       } catch (error) {
         setisError(true);
       } finally {
@@ -50,16 +51,18 @@ function App() {
     }
   }, [searchImage, currentPage]);
 
-  const onClickOnImage = (imageUrl) => {
-    setSelectedImageUrl(imageUrl);
-    setModalIsOpen(true);
+  const onClickOnImage = (imageUrl: string): void => {
+    if (!modalIsOpen) {
+      setSelectedImageUrl(imageUrl);
+      setModalIsOpen(true);
+    }  
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setModalIsOpen(false);
   };
 
-  const onClickLoadMore = () => {
+  const onClickLoadMore = (): void => {
     setCurrentPage(prevPage => prevPage + 1); 
   };
 

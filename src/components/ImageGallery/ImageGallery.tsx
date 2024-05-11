@@ -1,7 +1,14 @@
 import ImageCard from "../ImageCard/ImageCard";
 import css from "../ImageGallery/ImageGallery.module.css";
+import React from "react";
+import { ImageData } from "../App/App.types";
 
-const ImageGallery = ({ Images, onClickOnImage }) => {
+interface ImageGalleryProps {
+  Images: ImageData[];
+  onClickOnImage: (imageUrl: string) => void;
+}
+
+const ImageGallery: React.FC<ImageGalleryProps> = ({ Images, onClickOnImage }) => {
   return (
     <ul className={css.ImageGalleryUl}>
       {Images.map((image) => (
