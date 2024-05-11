@@ -6,8 +6,10 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import ImageModal from "../ImageModal/ImageModal";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
-import { requestProductsByQuery } from "../../services/api";
+import { requestProductsByQuery, ApiResponse } from "../../services/api";
 import { ImageData } from "./App.types";
+
+
 
 
 function App() {
@@ -16,7 +18,7 @@ function App() {
   const [isLoad, setisLoad] = useState<boolean>(false);
   const IMAGE_PER_PAGE = 12;
   const [searchImage, setSearchImage] = useState<string>("");
-  const [imagesData, setimagesData] = useState<ImageData[]>([]);
+  const [ApisResponse, setimagesData] = useState<ImageData[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [isError, setisError] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -27,7 +29,7 @@ function App() {
       try {
         setisError(false);
         setisLoad(true);
-        const data:any = await requestProductsByQuery(searchImage as string, IMAGE_PER_PAGE as number, currentPage as number);
+        const data:ApiResponse = await requestProductsByQuery(searchImage as string, IMAGE_PER_PAGE as number, currentPage as number);
         setimagesData((previmagesData:ImageData[]) => [...previmagesData, ...data.results]); 
         setTotalImageOnApi(data.total as number);
       } catch (error) {
@@ -70,7 +72,7 @@ function App() {
   return (
     <>
       <SearchBar onSubmit={onSubmit} />
-      {imagesData.length>0 && <ImageGallery Images={imagesData} onClickOnImage={onClickOnImage} />}
+      {ApisResponse.length>0 && <ImageGallery Images={ApisResponse} onClickOnImage={onClickOnImage} />}
       {modalIsOpen && <ImageModal imageUrl={selectedImageUrl} modalIsOpen={modalIsOpen} onRequestClose={closeModal} />}
       {isLoad && <Loader />}
       {isError && <ErrorMessage />}
