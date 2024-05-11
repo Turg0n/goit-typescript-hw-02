@@ -4,10 +4,11 @@ import SearchBar from "../SearchBar/SearchBar";
 import Loader from "../Loader/Loader";
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import ImageGallery from '../ImageGallery/ImageGallery';
-import ImageModal from "../ImageModal/ImageModal.tsx";
-import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn.tsx";
+import ImageModal from "../ImageModal/ImageModal";
+import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import { requestProductsByQuery } from "../../services/api";
 import { ImageData } from "./App.types";
+
 
 function App() {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>("");
@@ -21,21 +22,12 @@ function App() {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   
-  const onSubmit = (eventValue: string) => {
-    if (eventValue !== searchImage) {
-      setSearchImage(eventValue);
-      setCurrentPage(1);
-      setimagesData([]);
-    }
-  };
-  
-
-  const fetchData = async (searchImage: string, currentPage: number) => {
+  const fetchData = async (searchImage: string, currentPage: number): Promise<void> => {
     if (searchImage) {
       try {
         setisError(false);
         setisLoad(true);
-        const data = await requestProductsByQuery(searchImage as string, IMAGE_PER_PAGE as number, currentPage as number);
+        const data:any = await requestProductsByQuery(searchImage as string, IMAGE_PER_PAGE as number, currentPage as number);
         setimagesData((previmagesData:ImageData[]) => [...previmagesData, ...data.results]); 
         setTotalImageOnApi(data.total as number);
       } catch (error) {
@@ -45,18 +37,27 @@ function App() {
       }
     }
   };
+  
   useEffect(() => {
     if (searchImage) {
       fetchData(searchImage, currentPage);
     }
   }, [searchImage, currentPage]);
 
+  const handleSearch = (eventValue: string) => {
+    if (eventValue !== searchImage) {
+      setSearchImage(eventValue);
+      setCurrentPage(1);
+      setimagesData([]);
+    }
+  };
   const onClickOnImage = (imageUrl: string): void => {
     if (!modalIsOpen) {
       setSelectedImageUrl(imageUrl);
       setModalIsOpen(true);
     }  
   };
+  
 
   const closeModal = (): void => {
     setModalIsOpen(false);
@@ -68,7 +69,7 @@ function App() {
 
   return (
     <>
-      <SearchBar onSubmit={onSubmit} />
+      <SearchBar onSearch={handleSearch} />
       {imagesData.length>0 && <ImageGallery Images={imagesData} onClickOnImage={onClickOnImage} />}
       {modalIsOpen && <ImageModal imageUrl={selectedImageUrl} modalIsOpen={modalIsOpen} onRequestClose={closeModal} />}
       {isLoad && <Loader />}
